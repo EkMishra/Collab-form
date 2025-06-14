@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  role      Role
+  forms     Form[]   @relation("CreatedForms")
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  admin
+  user
+}
+
+model Form {
+  id          String        @id @default(uuid())
+  title       String
+  createdBy   User          @relation("CreatedForms", fields: [createdById], references: [id])
+  createdById String
+  inviteCode  String        @unique
+  fields      FormField[]
+  response    FormResponse?
+  createdAt   DateTime      @default(now())
+  finalized   Boolean @default(false)
+}
+
+model FormField {
+  id        String   @id @default(uuid())
+  form      Form     @relation(fields: [formId], references: [id])
+  formId    String
+  label     String
+  fieldType FieldType
+  options   Json?
+  order     Int
+}
+
+enum FieldType {
+  text
+  number
+  dropdown
+}
+
+model FormResponse {
+  id         String   @id @default(uuid())
+  form       Form     @relation(fields: [formId], references: [id])
+  formId     String   @unique
+  responses  Json
+  updatedAt  DateTime @updatedAt
+}
+
+
