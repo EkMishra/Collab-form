@@ -75,7 +75,7 @@ Server will run at: `http://localhost:3000`
 In a separate terminal:
 
 ```bash
-cd frontend
+cd frontend/Collab-Frontend
 npm install
 npm run dev
 ```
